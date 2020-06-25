@@ -1,0 +1,163 @@
+{
+	"info": {
+		"_postman_id": "29163fd6-67a1-4dbf-97a9-2bfec9b81427",
+		"name": "AME - TEST",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create an employee",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f1db9655-1b64-4ad3-96cf-f97628c71913",
+						"exec": [
+							"/** Its possible using mocks and random fake data, but, I'm using inserts to accurately validate */\r",
+							"const PROPERTY_TYPES = {\r",
+							"    ARRAY: 'array',\r",
+							"    BOOLEAN: 'boolean',\r",
+							"    INTEGER: 'integer',\r",
+							"    OBJECT: 'object',\r",
+							"    STRING: 'string'\r",
+							"};\r",
+							"\r",
+							"const jsonData = pm.response.json();\r",
+							"const schema = {\r",
+							"    type: 'object',\r",
+							"    properties: {\r",
+							"        status: {\r",
+							"            type: PROPERTY_TYPES.STRING,\r",
+							"        },\r",
+							"        data: {\r",
+							"            type: 'object',\r",
+							"            properties: {\r",
+							"                name: {\r",
+							"                    type: PROPERTY_TYPES.STRING,\r",
+							"                }, \r",
+							"                salary: {\r",
+							"                    type: PROPERTY_TYPES.STRING,\r",
+							"                }, \r",
+							"                age: {\r",
+							"                    type: PROPERTY_TYPES.STRING,\r",
+							"                }, \r",
+							"                id: {\r",
+							"                    type: PROPERTY_TYPES.INTEGER,\r",
+							"                }\r",
+							"            }, \r",
+							"            required: ['name', 'salary', 'age', 'id'],\r",
+							"            additionalProperties: false\r",
+							"        }\r",
+							"    },\r",
+							"    required: ['status', 'data'],\r",
+							"    additionalProperties: false\r",
+							"};\r",
+							"\r",
+							"pm.test('Status code is 200', () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('Response body is correct', () => {\r",
+							"    pm.expect(jsonData.status).to.be.eql('success');\r",
+							"    pm.expect(jsonData.data.name).to.be.eql('Taís');\r",
+							"    pm.expect(jsonData.data.salary).to.be.eql('150000');\r",
+							"    pm.expect(jsonData.data.age).to.be.eql('24');\r",
+							"});\r",
+							"\r",
+							"pm.test('Response body is match with schema', () => {\r",
+							"    pm.response.to.have.jsonSchema(schema);\r",
+							"});\r",
+							"\r",
+							"pm.globals.set(\"employeeId\", pm.response.json().data.id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Taís\",\r\n    \"salary\": \"150000\",\r\n    \"age\": \"24\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://dummy.restapiexample.com/api/v1/create",
+					"protocol": "http",
+					"host": [
+						"dummy",
+						"restapiexample",
+						"com"
+					],
+					"path": [
+						"api",
+						"v1",
+						"create"
+					]
+				},
+				"description": "This request validates:\r\n- If jsonSchema correctly respects the standard schema\r\n- If the status code is returned correctly (200 OK)\r\n- If the data is returning correctly"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete the employee",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "dabaaaf1-a7a4-4d98-8f9c-4e1a326b093d",
+						"exec": [
+							"const jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test('Status code is 200', () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('Response body is correct', () => {\r",
+							"    pm.expect(jsonData.status).to.be.eql('success');\r",
+							"    pm.expect(jsonData.message).to.be.eql('successfully! deleted Records');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://dummy.restapiexample.com/api/v1/delete/{{employeeId}}",
+					"protocol": "http",
+					"host": [
+						"dummy",
+						"restapiexample",
+						"com"
+					],
+					"path": [
+						"api",
+						"v1",
+						"delete",
+						"{{employeeId}}"
+					]
+				},
+				"description": "This request validates:\r\n- If the employee has been removed with successfully"
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
